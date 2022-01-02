@@ -1,19 +1,19 @@
 [mysqlDB] #enter your database creditals
-host = 'localhost'
-db = 'databasename'
-user = 'username'
-pass = 'password'
+host = localhost
+db = databasename
+user = username
+pass = password
 
 [facebook-login] #enter the new accounts creditals
-username = 'e-mail'
-password = 'password'
+username = e-mail
+password = password
 
 [check] #edit the words inside '% & %'
-query = 'text LIKE '%somting%' OR text LIKE '%interesting%' OR text LIKE '%stuff%' OR text LIKE '%needed%' '
+query = text LIKE '%somting%' OR text LIKE '%interesting%' OR text LIKE '%stuff%' OR text LIKE '%needed%'
 
 [chrome] #set the patch to your chromedriver & chromeplofile (a empty folder)
-driver = 'C:\\chromedriver\\chromedriver.exe'
-profile = 'C:\\FB scrapper\\chromeprofile'
+driver = C:\\chromedriver\\chromedriver.exe
+profile = C:\\FB scrapper\\chromeprofile
 
 [proxy]
-#proxy = '217.171.87.26:8080'
+#proxy = 217.171.87.26:8080
