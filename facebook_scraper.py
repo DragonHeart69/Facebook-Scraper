@@ -177,7 +177,7 @@ mycursor.close()
 
 ###find interessting items
 mycursor = mydb.cursor(buffered=True)
-find = "SELECT ID, needed FROM scraper where needed LIKE '%verify%' AND " + settings['check']['query'] + "GROUP BY ID"
+find = "SELECT ID, needed FROM scraper where needed LIKE '%verify%' AND text LIKE '%werken%' OR text LIKE '%afsluit%' OR text LIKE '%afgesloten%' OR text LIKE '%ongeval%' GROUP BY ID"
 mycursor.execute(find)
 result = mycursor.fetchall()
 number_of_rows=result[0]
