@@ -7,8 +7,11 @@
 1.Get [Python](https://www.python.org/downloads/) (recommended Python 3.7+)
 
 2.Download [Chromedriver](https://chromedriver.chromium.org)
+
     - Choose the latest stable version
+
     - Download the correct version for your OS
+    
         - For windows, use 32bit version
 
 3.Clone or download this repository
