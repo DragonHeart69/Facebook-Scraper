@@ -36,4 +36,14 @@ Edit the settings in this file
 python facebook_scraper.py
 ```
 
+6a. You can also uncomment the  next line in  ```facebook_scraper.py```
+
+     ```chromeOptions.add_argument('--headless')```
+
+    Now, you don't see de Chrome Window
+
+6b. For the Windows users:
+
+    You can double click on the ```Screenless.vbs``` for run the script without command prompt
+
 7. Take a cup of coffee and lean back
