@@ -91,7 +91,7 @@ for href in hrefs:
     tested_url = urlparse(href)
     try:
         tested_id = parse_qs(tested_url.query)['story_fbid'][0]
-        find = "SELECT COUNT(*) FROM scraper where story_fbid = " + tested_id
+        find = "SELECT COUNT(*) FROM " + settings['mysqlDB']['table'] + " where story_fbid = " + tested_id
         mycursor.execute(find)
         result=mycursor.fetchone()
         number_of_rows=result[0]
@@ -123,7 +123,7 @@ for href in hrefs:
                                 time4 = time3.lstrip("view_time.")
                     except KeyError:
                         time4 = int(time.time())
-                    sql = "INSERT INTO scraper (date, author, text, href, story_fbid, fb_id, status, needed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                    sql = "INSERT INTO " + settings['mysqlDB']['table'] + " (date, author, text, href, story_fbid, fb_id, status, needed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                     val = (time4, author.text, text.text, href, story_fbid, id, "new", "verify")
                     mycursor.execute(sql, val)
                     mydb.commit()
@@ -138,7 +138,7 @@ for href in hrefs:
     except KeyError:
         id = PurePosixPath(unquote(urlparse(href).path)).parts[3]
         story_fbid= PurePosixPath(unquote(urlparse(href).path)).parts[4]
-        find = "SELECT COUNT(*) FROM scraper where story_fbid = " + story_fbid
+        find = "SELECT COUNT(*) FROM " + settings['mysqlDB']['table'] + " where story_fbid = " + story_fbid
         mycursor.execute(find)
         result=mycursor.fetchone()
         number_of_rows=result[0]
@@ -161,7 +161,7 @@ for href in hrefs:
                     except KeyError:
                         time4 = int(time.time())
                 
-                    sql = "INSERT INTO scraper (date, author, text, href, story_fbid, fb_id, status, needed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                    sql = "INSERT INTO " + settings['mysqlDB']['table'] + " (date, author, text, href, story_fbid, fb_id, status, needed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                     val = (time4, author.text, text.text, href, story_fbid, id, "new", "verify")
                     mycursor.execute(sql, val)
                     mydb.commit()
@@ -177,18 +177,18 @@ mycursor.close()
 
 ###find interessting items
 mycursor = mydb.cursor(buffered=True)
-find = "SELECT ID, needed FROM scraper where needed LIKE '%verify%' AND " + settings['check']['query'] + " GROUP BY ID"
+find = "SELECT ID, needed FROM " + settings['mysqlDB']['table'] + " where needed LIKE '%verify%' AND " + settings['check']['query'] + " GROUP BY ID"
 mycursor.execute(find)
 result = mycursor.fetchall()
 try:
     number_of_rows=result[0]
     if number_of_rows != 0:
         for ID, needed in result:
-            sql  = "UPDATE scraper SET needed = 'interesting', status ='verify' where id = " + str(ID)
+            sql  = "UPDATE " + settings['mysqlDB']['table'] + " SET needed = 'interesting', status ='verify' where id = " + str(ID)
             mycursor.execute(sql)
             mydb.commit()
             print(mycursor.rowcount, "changed to interesting")
-        sql2 = "UPDATE scraper SET needed = 'archive', status ='archive' where needed LIKE '%verify%' "
+        sql2 = "UPDATE " + settings['mysqlDB']['table'] + " SET needed = 'archive', status ='archive' where needed LIKE '%verify%' "
         mycursor.execute(sql2)
         mydb.commit()
         print(mycursor.rowcount, "referred to the archive")

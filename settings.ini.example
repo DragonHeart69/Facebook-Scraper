@@ -3,6 +3,7 @@ host = localhost
 db = databasename
 user = username
 pass = password
+table = table_name
 
 [facebook-login] #enter the new accounts creditals
 username = e-mail
