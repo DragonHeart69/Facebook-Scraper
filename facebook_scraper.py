@@ -50,7 +50,7 @@ mycursor.close()
 mydb.close()
 
 ###Chrome Settings
-
+print("Set Chrome settings")
 chromeDriverPath = Service(settings['chrome']['driver'])
 userdatadir = settings['chrome']['profile']
 chromeOptions = webdriver.ChromeOptions() 
@@ -58,21 +58,27 @@ chromeOptions.add_argument(f'--user-data-dir={userdatadir}')
 #!!!Enable this 2 lines only when you set a proxy server insite your settings file!!!#
 #PROXY = settings['proxy']['proxy']
 #chromeOptions.add_argument('--proxy-server=%s' % PROXY)
+#!!!This option don't show up the Chrome window!!!#
+#chromeOptions.add_argument('--headless')
 chromeOptions.add_argument('--disable-notifications')
 chrome = webdriver.Chrome(service=chromeDriverPath, options=chromeOptions) 
+chrome.execute_cdp_cmd("Page.setBypassCSP", {"enabled": True})
 
 ###open site
+print("Open timeline on Most Recent")
 chrome.get("https://m.facebook.com/home.php?sk=h_chr")
 time.sleep(10)
 
 ###login
 ###cookie accept
 try:
+
     button = Wait(chrome, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[title='Alle cookies toestaan']"))).click()
 except:
     pass
 ###target username & password & login
 try:
+    print("Try to login")
     username = Wait(chrome, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='email']")))
     password = Wait(chrome, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='pass']")))
     username.clear()
@@ -86,6 +92,7 @@ except:
     pass
 
 ###scroll to buttom
+print("Scroll to te buttom & back up")
 while True:
     previous_height = chrome.execute_script('return document.body.scrollHeight')
     chrome.execute_script('window.scrollTo(0, document.body.scrollHeight);')
@@ -96,6 +103,7 @@ while True:
 chrome.execute_script('window.scrollTo(0, 0);')
 
 ###get all articles
+print("Get all the links to the Articles")
 links = chrome.find_elements(By.XPATH, "//a[@class='_26yo']")
 hrefs =[]
 for link in links:
