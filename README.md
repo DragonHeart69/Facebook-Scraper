@@ -1,12 +1,36 @@
-# Facebook Scraper
- Scrape the facebook timeline to a sql database
+# Facebook Timeline Scraper
 
- The script is write in Python
+ Scrape the facebook timeline to a sql database.
 
-first install python 3.10 (tested system) & git
-go to the folder where you want this project
-run git clone https://github.com/DragonHeart69/Facebook-Scraper.git in the shell
-create the table with scraper.sql
-& run pip install -r requirements.txt in the shell
-now you can rename settings.ini.example to settings.ini & edit all the settings
-run python facebook_scraper.py in the shell
+## Installation
+
+1.Get [Python](https://www.python.org/downloads/) (recommended Python 3.7+)
+
+2.Download [Chromedriver](https://chromedriver.chromium.org)
+    - Choose the latest stable version
+    - Download the correct version for your OS
+        - For windows, use 32bit version
+
+3.Clone or download this repository
+
+```shell script
+git clone https://github.com/DragonHeart69/Facebook-Scraper.git
+```
+
+4.Install the Python requirements
+
+```shell script
+pip install -r requirements.txt
+```
+
+5. Rename ```settings.ini.example``` to ```settings.ini```
+
+Edit the settings in this file
+
+6. Run the Python script
+
+```shell script
+python facebook_scraper.py
+```
+
+7. Take a cup of coffee and lean back
