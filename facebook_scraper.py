@@ -32,6 +32,20 @@ except Exception as err:
     print("Error: " + str(err))
     sys.exit(1)
 
+###Create DB if not exist
+mycursor = mydb.cursor(buffered=True)
+mycursor.execute('''CREATE TABLE IF NOT EXISTS {tab} (
+  `ID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `date` bigint(20) NOT NULL,
+  `author` varchar(255) DEFAULT NULL,
+  `text` longtext DEFAULT NULL,
+  `href` varchar(255) NOT NULL,
+  `story_fbid` varchar(254) NOT NULL,
+  `fb_id` varchar(254) NOT NULL,
+  `status` varchar(254) NOT NULL,
+  `needed` varchar(254) NOT NULL
+);'''.format(tab=settings['mysqlDB']['table']))
+mydb.commit()
 
 ###Chrome Settings
 
@@ -86,7 +100,7 @@ for link in links:
     hrefs.append(link.get_attribute('href'))
 
 ###check if article already exist & scrapit 
-mycursor = mydb.cursor(buffered=True)
+
 for href in hrefs:
     tested_url = urlparse(href)
     try:
