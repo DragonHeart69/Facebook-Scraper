@@ -8,8 +8,8 @@ pass = password
 username = e-mail
 password = password
 
-[check] #edit the words inside '% & %'
-query = text LIKE '%somting%' OR text LIKE '%interesting%' OR text LIKE '%stuff%' OR text LIKE '%needed%'
+[check] #edit the words inside '%% & %%'
+query = text LIKE '%%somting%%' OR text LIKE '%%interesting%%' OR text LIKE '%%stuff%%' OR text LIKE '%%needed%%'
 
 [chrome] #set the patch to your chromedriver & chromeplofile (a empty folder)
 driver = C:\\chromedriver\\chromedriver.exe

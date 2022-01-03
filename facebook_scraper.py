@@ -177,23 +177,24 @@ mycursor.close()
 
 ###find interessting items
 mycursor = mydb.cursor(buffered=True)
-find = "SELECT ID, needed FROM scraper where needed LIKE '%verify%' AND text LIKE '%werken%' OR text LIKE '%afsluit%' OR text LIKE '%afgesloten%' OR text LIKE '%ongeval%' GROUP BY ID"
+find = "SELECT ID, needed FROM scraper where needed LIKE '%verify%' AND " + settings['check']['query'] + " GROUP BY ID"
 mycursor.execute(find)
 result = mycursor.fetchall()
-number_of_rows=result[0]
-if number_of_rows != 0:
-    for ID, needed in result:
-        sql  = "UPDATE scraper SET needed = 'interesting', status ='verify' where id = " + str(ID)
-        mycursor.execute(sql)
+try:
+    number_of_rows=result[0]
+    if number_of_rows != 0:
+        for ID, needed in result:
+            sql  = "UPDATE scraper SET needed = 'interesting', status ='verify' where id = " + str(ID)
+            mycursor.execute(sql)
+            mydb.commit()
+            print(mycursor.rowcount, "changed to interesting")
+        sql2 = "UPDATE scraper SET needed = 'archive', status ='archive' where needed LIKE '%verify%' "
+        mycursor.execute(sql2)
         mydb.commit()
-        print(mycursor.rowcount, "changed to interesting")
-sql2 = "UPDATE scraper SET needed = 'archive', status ='archive' where needed LIKE '%verify%' "
-mycursor.execute(sql2)
-mydb.commit()
-print(mycursor.rowcount, "referred to the archive")
-mycursor.close()
-
-mydb.close()
-
-chrome.quit()
-
+        print(mycursor.rowcount, "referred to the archive")
+        mycursor.close()
+        mydb.close()
+        chrome.quit()
+except:
+    mydb.close()
+    chrome.quit()
