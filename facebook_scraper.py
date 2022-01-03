@@ -31,9 +31,9 @@ try:
 except Exception as err:
     print("Error: " + str(err))
     sys.exit(1)
+mycursor = mydb.cursor(buffered=True)
 
 ###Create DB if not exist
-mycursor = mydb.cursor(buffered=True)
 mycursor.execute('''CREATE TABLE IF NOT EXISTS {tab} (
   `ID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `date` bigint(20) NOT NULL,
@@ -46,6 +46,8 @@ mycursor.execute('''CREATE TABLE IF NOT EXISTS {tab} (
   `needed` varchar(254) NOT NULL
 );'''.format(tab=settings['mysqlDB']['table']))
 mydb.commit()
+mycursor.close()
+mydb.close()
 
 ###Chrome Settings
 
@@ -99,8 +101,18 @@ hrefs =[]
 for link in links:
     hrefs.append(link.get_attribute('href'))
 
-###check if article already exist & scrapit 
+###DBConnection
+try:
+    mydb = mysql.connector.connect( host = settings['mysqlDB']['host'],
+                                    user = settings['mysqlDB']['user'], 
+                                    password = settings['mysqlDB']['pass'], 
+                                    database = settings['mysqlDB']['db'])
+except Exception as err:
+    print("Error: " + str(err))
+    sys.exit(1)
+mycursor = mydb.cursor(buffered=True)
 
+###check if article already exist & scrapit 
 for href in hrefs:
     tested_url = urlparse(href)
     try:
@@ -174,7 +186,6 @@ for href in hrefs:
                                 time4 = time3.lstrip('{"time":')
                     except KeyError:
                         time4 = int(time.time())
-                
                     sql = "INSERT INTO " + settings['mysqlDB']['table'] + " (date, author, text, href, story_fbid, fb_id, status, needed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                     val = (time4, author.text, text.text, href, story_fbid, id, "new", "verify")
                     mycursor.execute(sql, val)
@@ -188,9 +199,21 @@ for href in hrefs:
         else:
             print(number_of_rows, "photo record already exists.")
 mycursor.close()
+mydb.close()
+chrome.quit()
+
+###DBConnection
+try:
+    mydb = mysql.connector.connect( host = settings['mysqlDB']['host'],
+                                    user = settings['mysqlDB']['user'], 
+                                    password = settings['mysqlDB']['pass'], 
+                                    database = settings['mysqlDB']['db'])
+except Exception as err:
+    print("Error: " + str(err))
+    sys.exit(1)
+mycursor = mydb.cursor(buffered=True)
 
 ###find interessting items
-mycursor = mydb.cursor(buffered=True)
 find = "SELECT ID, needed FROM " + settings['mysqlDB']['table'] + " where needed LIKE '%verify%' AND " + settings['check']['query'] + " GROUP BY ID"
 mycursor.execute(find)
 result = mycursor.fetchall()
@@ -199,16 +222,20 @@ try:
     if number_of_rows != 0:
         for ID, needed in result:
             sql  = "UPDATE " + settings['mysqlDB']['table'] + " SET needed = 'interesting', status ='verify' where id = " + str(ID)
+            print(sql)
             mycursor.execute(sql)
             mydb.commit()
             print(mycursor.rowcount, "changed to interesting")
-        sql2 = "UPDATE " + settings['mysqlDB']['table'] + " SET needed = 'archive', status ='archive' where needed LIKE '%verify%' "
-        mycursor.execute(sql2)
-        mydb.commit()
-        print(mycursor.rowcount, "referred to the archive")
-        mycursor.close()
-        mydb.close()
-        chrome.quit()
 except:
+    print ("no records match your search")
+try:
+    sql2 = "UPDATE " + settings['mysqlDB']['table'] + " SET needed = 'archive', status ='archive' where needed LIKE '%verify%' "
+    mycursor.execute(sql2)
+    mydb.commit()
+    print(mycursor.rowcount, "referred to the archive")
+    mycursor.close()
     mydb.close()
-    chrome.quit()
+except:
+    print("notting to do")
+    mycursor.close()
+    mydb.close()
