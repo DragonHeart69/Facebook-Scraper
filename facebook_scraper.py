@@ -170,42 +170,45 @@ for href in hrefs:
         else:
             print(number_of_rows, "record already exists.")
     except KeyError:
-        id = PurePosixPath(unquote(urlparse(href).path)).parts[3]
-        story_fbid= PurePosixPath(unquote(urlparse(href).path)).parts[4]
-        find = "SELECT COUNT(*) FROM " + settings['mysqlDB']['table'] + " where story_fbid = " + story_fbid
-        mycursor.execute(find)
-        result=mycursor.fetchone()
-        number_of_rows=result[0]
-        if number_of_rows == 0:
-            chrome.get(href)
-            time.sleep(10)
-            fbs_time = chrome.find_elements(By.XPATH, "//abbr[@data-sigil='timestamp']")
-            authors = chrome.find_elements(By.XPATH, "//strong [@class='actor']")
-            texts = chrome.find_elements(By.XPATH, "//div[@class='msg']/div")
-            for fb_time, author, text in zip(fbs_time, authors, texts):
-                try:
-                    link_date = fb_time.get_attribute('data-store')
+        try:
+            id = PurePosixPath(unquote(urlparse(href).path)).parts[3]
+            story_fbid= PurePosixPath(unquote(urlparse(href).path)).parts[4]
+            find = "SELECT COUNT(*) FROM " + settings['mysqlDB']['table'] + " where story_fbid = " + story_fbid
+            mycursor.execute(find)
+            result=mycursor.fetchone()
+            number_of_rows=result[0]
+            if number_of_rows == 0:
+                chrome.get(href)
+                time.sleep(10)
+                fbs_time = chrome.find_elements(By.XPATH, "//abbr[@data-sigil='timestamp']")
+                authors = chrome.find_elements(By.XPATH, "//strong [@class='actor']")
+                texts = chrome.find_elements(By.XPATH, "//div[@class='msg']/div")
+                for fb_time, author, text in zip(fbs_time, authors, texts):
                     try:
-                        time1 = link_date
-                        times2 = re.split(',',time1)
-                        for time2 in times2:
-                            if time2.startswith('{"time":'):
-                                time3 = time2
-                                time4 = time3.lstrip('{"time":')
-                    except KeyError:
-                        time4 = int(time.time())
-                    sql = "INSERT INTO " + settings['mysqlDB']['table'] + " (date, author, text, href, story_fbid, fb_id, status, needed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                    val = (time4, author.text, text.text, href, story_fbid, id, "new", "verify")
-                    mycursor.execute(sql, val)
-                    mydb.commit()
-                    print(mycursor.rowcount, "photo record added.")
-                    time.sleep(10)
-                    chrome.find_element(By.XPATH, "//a[@class='_6j_c']").click()
-                    time.sleep(10)
-                except StaleElementReferenceException:
-                    pass
-        else:
-            print(number_of_rows, "photo record already exists.")
+                        link_date = fb_time.get_attribute('data-store')
+                        try:
+                            time1 = link_date
+                            times2 = re.split(',',time1)
+                            for time2 in times2:
+                                if time2.startswith('{"time":'):
+                                    time3 = time2
+                                    time4 = time3.lstrip('{"time":')
+                        except KeyError:
+                            time4 = int(time.time())
+                        sql = "INSERT INTO " + settings['mysqlDB']['table'] + " (date, author, text, href, story_fbid, fb_id, status, needed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                        val = (time4, author.text, text.text, href, story_fbid, id, "new", "verify")
+                        mycursor.execute(sql, val)
+                        mydb.commit()
+                        print(mycursor.rowcount, "photo record added.")
+                        time.sleep(10)
+                        chrome.find_element(By.XPATH, "//a[@class='_6j_c']").click()
+                        time.sleep(10)
+                    except StaleElementReferenceException:
+                        pass
+            else:
+                print(number_of_rows, "photo record already exists.")
+        except:
+            pass
 mycursor.close()
 mydb.close()
 chrome.quit()
