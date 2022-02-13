@@ -12,12 +12,23 @@ password = password
 [check] #edit the words inside '%% & %%'
 query = text LIKE '%%somting%%' OR text LIKE '%%interesting%%' OR text LIKE '%%stuff%%' OR text LIKE '%%needed%%'
 
-[chrome] #set the patch to your chromedriver & chromeplofile (a empty folder)
+[chrome_windows] #set the patch to your chromedriver & chromeprofile (a empty folder)
+state = true #true OR false
 driver = C:\\chromedriver\\chromedriver.exe
-profile = C:\\FB scrapper\\chromeprofile
+profile = C:\\Users\\dimit\\FB scrapper\\chromeprofile
+
+[chrome_docker] #set the patch to your chromedriver (set location from dockerfile) & chromeprofile (a empty folder)
+state = false #true OR false
+driver = /usr/local/bin/chromedriver
+profile = /tmp/chrome_profiles
 
 [proxy]
-#proxy = 217.171.87.26:8080
+state = false #true OR false
+proxy = 217.171.87.26:8080
+
+[headless] #don't show the chrome window (for docker always set true)
+state = false #true OR false
 
 [loop-time] #set a timer for autoloop (7200 = 2hours)
+state = true #true OR false
 seconds = 7200

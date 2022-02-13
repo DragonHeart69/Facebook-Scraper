@@ -1,14 +1,8 @@
-###Addons
-import selenium
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait as Wait
-import selenium.webdriver.support.ui as UI
 from selenium.common.exceptions import *
 from urllib.parse import parse_qs,urlparse,unquote
 from pathlib import PurePosixPath
@@ -51,32 +45,36 @@ while 1:
     mydb.close()
 
     ###Chrome Settings
-    print("Set Chrome settings")
-    chromeDriverPath = Service(settings['chrome']['driver'])
-    userdatadir = settings['chrome']['profile']
-    chromeOptions = webdriver.ChromeOptions() 
+    print("Set Chrome settings") 
+    chromeOptions = webdriver.ChromeOptions()
+    if settings['chrome_windows']['state'] == 'true':
+        chromeDriverPath = Service(settings['chrome_windows']['driver'])
+        userdatadir = settings['chrome_windows']['profile']
+    if settings['chrome_docker']['state'] == "true":
+        chromeDriverPath = Service(settings['chrome_docker']['driver'])
+        userdatadir = settings['chrome_docker']['profile']
     chromeOptions.add_argument(f'--user-data-dir={userdatadir}')
-    #!!!Enable this 2 lines only when you set a proxy server insite your settings file!!!#
-    #PROXY = settings['proxy']['proxy']
-    #chromeOptions.add_argument('--proxy-server=%s' % PROXY)
-    #!!!This option don't show up the Chrome window!!!#
-    #chromeOptions.add_argument('--headless')
-    chromeOptions.add_argument('--disable-notifications')
+    if settings['proxy']['state'] == 'true':
+        PROXY = settings['proxy']['proxy']
+        chromeOptions.add_argument('--proxy-server=%s' % PROXY)
+    if settings['headless']['state'] == 'true':
+        chromeOptions.add_argument("--headless")
+    chromeOptions.add_argument("--no-sandbox")
+    chromeOptions.add_argument("--disable-dev-shm-usage")
     chrome = webdriver.Chrome(service=chromeDriverPath, options=chromeOptions) 
     chrome.execute_cdp_cmd("Page.setBypassCSP", {"enabled": True})
-
     ###open site
     print("Open timeline on Most Recent")
     chrome.get("https://m.facebook.com/home.php?sk=h_chr")
     time.sleep(10)
-
+    
     ###login
     ###cookie accept
     try:
-
         button = Wait(chrome, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[title='Alle cookies toestaan']"))).click()
     except:
         pass
+    
     ###target username & password & login
     try:
         print("Try to login")
@@ -89,9 +87,15 @@ while 1:
         password.send_keys(settings['facebook-login']['password'])
         time.sleep(3)
         button = Wait(chrome, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[name='login']"))).click()
+        print("Logged In")
+        time.sleep(10)
+        chrome.get("https://m.facebook.com/home.php?sk=h_chr")
+        time.sleep(10)
     except:
+        print("Already Logged In")
         pass
-
+    
+    
     ###scroll to buttom
     print("Scroll to te buttom & back up")
     while True:
@@ -109,7 +113,7 @@ while 1:
     hrefs =[]
     for link in links:
         hrefs.append(link.get_attribute('href'))
-
+        
     ###DBConnection
     try:
         mydb = mysql.connector.connect( host = settings['mysqlDB']['host'],
@@ -213,7 +217,7 @@ while 1:
     mycursor.close()
     mydb.close()
     chrome.quit()
-
+    
     ###DBConnection
     try:
         mydb = mysql.connector.connect( host = settings['mysqlDB']['host'],
@@ -251,8 +255,19 @@ while 1:
         print("notting to do")
         mycursor.close()
         mydb.close()
-    seconds = int(settings['loop-time']['seconds'])
-    for i in range(seconds,0,-1):
-        print(f"{i}", end="\r", flush=True)
-        time.sleep(1)
-    
+
+    def countdown(t):
+        while t:
+            mins, secs = divmod(t, 60) 
+            hours, mins = divmod(mins, 60)
+            timer = '{:02d}:{:02d}:{:02d}'.format(hours, mins, secs) 
+            print(timer, end="\r") 
+            time.sleep(1) 
+            t -= 1
+
+    if settings['loop-time']['state'] == "true":
+        t = int(settings['loop-time']['seconds'])
+    else:
+        sys.exit(1)
+
+    countdown(int(t))
