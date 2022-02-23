@@ -259,13 +259,19 @@ while 1:
         mycursor.execute(sql2)
         mydb.commit()
         print(mycursor.rowcount, "referred to the archive")
+    except:
+        print("notting to do")
+    try:
+        sql3 = "DELETE FROM " + settings['mysqlDB']['table'] + " WHERE date < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 30 DAY))"
+        mycursor.execute(sql3)
+        mydb.commit()
+        print("All record older then 30 days removed from database")
         mycursor.close()
         mydb.close()
     except:
         print("notting to do")
         mycursor.close()
         mydb.close()
-
     def countdown(t):
         while t:
             mins, secs = divmod(t, 60) 
