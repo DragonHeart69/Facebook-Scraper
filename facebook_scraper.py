@@ -162,8 +162,13 @@ while 1:
                                     time4 = time3.lstrip("view_time.")
                         except KeyError:
                             time4 = int(time.time())
+                        parsed = urlparse(href)
+                        new_netloc = 'https://www.facebook.com'
+                        new_path = parsed.path
+                        new_query = parsed.query
+                        new_link = new_netloc+new_path+ '?' +new_query
                         sql = "INSERT INTO " + settings['mysqlDB']['table'] + " (date, author, text, href, story_fbid, fb_id, status, needed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                        val = (time4, author.text, text.text, href, story_fbid, id, "new", "verify")
+                        val = (time4, author.text, text.text, new_link, story_fbid, id, "new", "verify")
                         mycursor.execute(sql, val)
                         mydb.commit()
                         print(mycursor.rowcount, "record added.")
@@ -200,8 +205,12 @@ while 1:
                                         time4 = time3.lstrip('{"time":')
                             except KeyError:
                                 time4 = int(time.time())
+                            parsed = urlparse(href)
+                            new_netloc = 'https://www.facebook.com'
+                            new_path = parsed.path
+                            new_link = new_netloc+new_path
                             sql = "INSERT INTO " + settings['mysqlDB']['table'] + " (date, author, text, href, story_fbid, fb_id, status, needed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                            val = (time4, author.text, text.text, href, story_fbid, id, "new", "verify")
+                            val = (time4, author.text, text.text, new_link, story_fbid, id, "new", "verify")
                             mycursor.execute(sql, val)
                             mydb.commit()
                             print(mycursor.rowcount, "photo record added.")
@@ -230,22 +239,23 @@ while 1:
     mycursor = mydb.cursor(buffered=True)
 
     ###find interessting items
-    find = "SELECT ID, needed FROM " + settings['mysqlDB']['table'] + " where needed LIKE '%verify%' AND " + settings['check']['query'] + " GROUP BY ID"
+    find = "SELECT ID, needed FROM " + settings['mysqlDB']['table'] + " WHERE needed = 'verify' AND (" + settings['check']['query'] + ") GROUP BY ID"
     mycursor.execute(find)
+    del result
     result = mycursor.fetchall()
     try:
         number_of_rows=result[0]
         if number_of_rows != 0:
             for ID, needed in result:
-                sql  = "UPDATE " + settings['mysqlDB']['table'] + " SET needed = 'interesting', status ='verify' where id = " + str(ID)
-                print(sql)
+                sql  = "UPDATE " + settings['mysqlDB']['table'] + " SET needed = 'interesting', status ='verify' WHERE ID = " + str(ID)
                 mycursor.execute(sql)
                 mydb.commit()
                 print(mycursor.rowcount, "changed to interesting")
+        del result
     except:
         print ("no records match your search")
     try:
-        sql2 = "UPDATE " + settings['mysqlDB']['table'] + " SET needed = 'archive', status ='archive' where needed LIKE '%verify%' "
+        sql2 = "UPDATE " + settings['mysqlDB']['table'] + " SET needed = 'archive', status ='archive' WHERE needed = 'verify' "
         mycursor.execute(sql2)
         mydb.commit()
         print(mycursor.rowcount, "referred to the archive")
