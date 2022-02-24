@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait as Wait
 from selenium.common.exceptions import *
@@ -95,16 +97,22 @@ while 1:
         print("Already Logged In")
         pass
     
-    
-    ###scroll to buttom
-    print("Scroll to te buttom & back up")
-    while True:
-        previous_height = chrome.execute_script('return document.body.scrollHeight')
-        chrome.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-        time.sleep(5)
-        new_height= chrome.execute_script('return document.body.scrollHeight')
-        if new_height == previous_height:
-            break
+    if settings['scroll-time']['state'] == 'true':
+        times = settings['scroll-time']['times']
+        print("Scroll "+times+" times")
+        for i in range(int(times)): 
+            ActionChains(chrome).send_keys(Keys.END).perform()
+            time.sleep(3)
+    else:
+        ###scroll to buttom
+        print("Scroll to te buttom & back up")
+        while True:
+            previous_height = chrome.execute_script('return document.body.scrollHeight')
+            chrome.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+            time.sleep(5)
+            new_height= chrome.execute_script('return document.body.scrollHeight')
+            if new_height == previous_height:
+                break
     chrome.execute_script('window.scrollTo(0, 0);')
 
     ###get all articles

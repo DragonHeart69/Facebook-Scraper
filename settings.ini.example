@@ -32,3 +32,7 @@ state = false #true OR false
 [loop-time] #set a timer for autoloop (7200 = 2hours)
 state = true #true OR false
 seconds = 7200
+
+[scroll-time] #set to true with a number for the scrolls, or to false for scroll to the bottom (scroll to the bottom don't work in docker)
+state = true
+times = 20
