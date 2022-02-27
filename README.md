@@ -8,7 +8,7 @@
 
 2.Download [Chromedriver](https://chromedriver.chromium.org)
 
-    - Choose the latest stable version
+    - Choose the latest stable version (must match the installed version of google chrome)
 
     - Download the correct version for your OS
     
@@ -36,13 +36,7 @@ Edit the settings in this file
 python facebook_scraper.py
 ```
 
-6a. You can also uncomment the  next line in  ```facebook_scraper.py```
-
-     ```chromeOptions.add_argument('--headless')```
-
-    Now, you don't see de Chrome Window
-
-6b. For the Windows users:
+6a. For the Windows users:
 
     You can double click on the ```Screenless.vbs``` for run the script without command prompt
 
