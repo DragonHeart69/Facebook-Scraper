@@ -24,12 +24,13 @@ while 1:
         mydb = mysql.connector.connect( host = settings['mysqlDB']['host'],
                                         user = settings['mysqlDB']['user'], 
                                         password = settings['mysqlDB']['pass'], 
-                                        database = settings['mysqlDB']['db'])
+                                        database = settings['mysqlDB']['db'], 
+                                        charset='utf8mb4')
     except Exception as err:
         print("Error: " + str(err))
         sys.exit(1)
     mycursor = mydb.cursor(buffered=True)
-
+    mycursor.execute("set names utf8mb4;")
     ###Create DB if not exist
     mycursor.execute('''CREATE TABLE IF NOT EXISTS {tab} (
     `ID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -127,7 +128,8 @@ while 1:
         mydb = mysql.connector.connect( host = settings['mysqlDB']['host'],
                                         user = settings['mysqlDB']['user'], 
                                         password = settings['mysqlDB']['pass'], 
-                                        database = settings['mysqlDB']['db'])
+                                        database = settings['mysqlDB']['db'], 
+                                        charset='utf8mb4')
     except Exception as err:
         print("Error: " + str(err))
         sys.exit(1)
@@ -240,7 +242,8 @@ while 1:
         mydb = mysql.connector.connect( host = settings['mysqlDB']['host'],
                                         user = settings['mysqlDB']['user'], 
                                         password = settings['mysqlDB']['pass'], 
-                                        database = settings['mysqlDB']['db'])
+                                        database = settings['mysqlDB']['db'], 
+                                        charset='utf8mb4')
     except Exception as err:
         print("Error: " + str(err))
         sys.exit(1)
